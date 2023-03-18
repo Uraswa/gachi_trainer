@@ -47,7 +47,7 @@ def index(request):
 
             task.save()
 
-    maximumCost = 5
+    maximumCost = 7
     repeat_tasks = []
     are_new = []
 
@@ -175,6 +175,7 @@ def index(request):
 def formListOfTasks(maximumCost: int, repeat_tasks: list):
     best_combination = list()
     best_combination_cost = 0
+    best_combination_collections = 0
 
     for combination in itertools.combinations(repeat_tasks, r=len(repeat_tasks)):
 
@@ -183,19 +184,24 @@ def formListOfTasks(maximumCost: int, repeat_tasks: list):
             total_iterations = 0
             i = sp
             curcost = 0
+
             cur_comb = list()
+            cur_collections = set()
+
             while curcost < maximumCost and total_iterations < len(repeat_tasks):
 
                 if curcost + combination[i].task_cost > maximumCost:
                     break
                 curcost += combination[i].task_cost
+                cur_collections.add(combination[i].collection.name)
                 cur_comb.append(combination[i])
                 i += 1
                 total_iterations += 1
                 if i == len(repeat_tasks):
                     i = 0
 
-            if best_combination_cost < curcost:
+            if best_combination_cost < curcost or best_combination_cost == curcost and best_combination_collections < len(cur_collections):
+                best_combination_collections = len(cur_collections)
                 best_combination_cost = curcost
                 best_combination = cur_comb
 
