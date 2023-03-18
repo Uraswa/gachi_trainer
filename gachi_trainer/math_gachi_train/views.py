@@ -160,7 +160,14 @@ def index(request):
 
     # print(list(CollectionModel.objects.all()))
 
-    initial_data = [{'cost': obj.task_cost, 'days': obj.getDays(), 'task_name': obj.task_name, 'collection' : obj.collection.name} for obj in result_tasks]
+    initial_data = [
+        {'cost': obj.task_cost,
+         'days': obj.getDays(),
+         'task_name': obj.task_name,
+         'collection' : obj.collection.name,
+         'description': obj.collection.description,
+         'descriptionT': obj.description,
+         } for obj in result_tasks]
     formset = MyModelFormSet(initial=initial_data)
     return render(request, 'index.html', {'tasks': result_tasks, 'formset': formset, 'areNew': are_new})
 
