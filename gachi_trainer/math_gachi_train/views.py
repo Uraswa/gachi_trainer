@@ -39,7 +39,7 @@ def index(request):
             else:
                 task = TaskModel()
 
-            task.banned = f.cleaned_data['cost'] == 0
+            task.banned = False
             task.task_cost = f.cleaned_data['cost']
             task.task_name = f.cleaned_data['task_name']
             task.collection = collection
@@ -47,7 +47,7 @@ def index(request):
 
             task.save()
 
-    maximumCost = 7
+    maximumCost = random.randint(13,18)
     repeat_tasks = []
     are_new = []
 
@@ -95,6 +95,7 @@ def index(request):
 
         for collection in cal:
 
+            if not collection.enabled: continue
             task_ranges = collection.task_intervals.split(";")
             imagine_tasks_cur_collection = list()
 
