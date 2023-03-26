@@ -56,6 +56,7 @@ def index(request):
     for collection in CollectionModel.objects.all():
 
         if not collection.enabled: continue
+        if str(datetime.datetime.now().weekday()) not in collection.subject.weekDays: continue
         # tasks = TaskModel.objects.get(collection=collection)
 
         cur_tasks = collection.tasks.filter(task_repeat_date__lte=date.today(), banned=False)
@@ -97,6 +98,8 @@ def index(request):
         for collection in cal:
 
             if not collection.enabled: continue
+            if str(datetime.datetime.now().weekday()) not in collection.subject.weekDays: continue
+
             task_ranges = collection.task_intervals.split(";")
             imagine_tasks_cur_collection = list()
 

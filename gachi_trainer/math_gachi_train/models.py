@@ -1,7 +1,16 @@
 from django.db import models
 
+
+class Subject(models.Model):
+    name = models.CharField(max_length=256)
+    weekDays = models.CharField(max_length=999) # через запятую индексы дней недели. 0,2,5,6
+
+    def __str__(self):
+        return self.name
+
 # password = admin, name = admin
 class CollectionModel(models.Model):
+    subject = models.ForeignKey(to=Subject, on_delete=models.CASCADE, related_name="collections", null=True)
     name = models.CharField(max_length=256, default="")
     short_name = models.CharField(max_length=256, unique=True, null=False)
     task_intervals = models.CharField(max_length=256, default="")
