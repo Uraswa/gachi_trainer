@@ -50,6 +50,7 @@ def index(request):
     maximumCost = random.randint(13,18)
     repeat_tasks = []
     are_new = []
+    limit_cache = dict()
 
     total_repeat_cost = 0
     for collection in CollectionModel.objects.all():
@@ -112,6 +113,14 @@ def index(request):
                     if TaskModel.objects.filter(task_name=task_name).exists():
                         continue
 
+                    if collection.short_name not in limit_cache:
+                        limit_cache[collection.short_name] = 0
+
+                    if limit_cache[collection.short_name] >= collection.limit: break
+
+                    if collection.short_name in limit_cache:
+                        limit_cache[collection.short_name] = limit_cache[collection.short_name] + 1
+
                     task_model = TaskModel()
                     task_model.collection = collection
                     task_model.task_cost = collection.avg_cost
@@ -173,14 +182,14 @@ def index(request):
     return render(request, 'index.html', {'tasks': result_tasks, 'formset': formset, 'areNew': are_new})
 
 
-def formListOfTasks(maximumCost: int, repeat_tasks: list):
+def formListOfTasks(maximumCost: int, tasks_list: list):
     best_combination = list()
     best_combination_cost = 0
     best_combination_collections = 0
 
-    for combination in itertools.combinations(repeat_tasks, r=len(repeat_tasks)):
+    for combination in itertools.combinations(tasks_list, r=len(tasks_list)):
 
-        for sp in range(len(repeat_tasks)):
+        for sp in range(len(tasks_list)):
 
             total_iterations = 0
             i = sp
@@ -189,7 +198,7 @@ def formListOfTasks(maximumCost: int, repeat_tasks: list):
             cur_comb = list()
             cur_collections = set()
 
-            while curcost < maximumCost and total_iterations < len(repeat_tasks):
+            while curcost < maximumCost and total_iterations < len(tasks_list):
 
                 if curcost + combination[i].task_cost > maximumCost:
                     break
@@ -198,13 +207,13 @@ def formListOfTasks(maximumCost: int, repeat_tasks: list):
                 cur_comb.append(combination[i])
                 i += 1
                 total_iterations += 1
-                if i == len(repeat_tasks):
+                if i == len(tasks_list):
                     i = 0
-
             if best_combination_cost < curcost or best_combination_cost == curcost and best_combination_collections < len(cur_collections):
                 best_combination_collections = len(cur_collections)
                 best_combination_cost = curcost
                 best_combination = cur_comb
+
 
     #print(best_combination, best_combination_cost)
     return best_combination

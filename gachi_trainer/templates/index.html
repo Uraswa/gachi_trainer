@@ -39,7 +39,7 @@
             {% for form in formset %}
 
 
-            <div class="form-row {% if areNew|index:forloop.counter0 %} alert alert-success{%else%} alert alert-light {%endif%}">
+            <div id="task-{{form.task_name.value}}" class="form-row {% if areNew|index:forloop.counter0 %} alert alert-success{%else%} alert alert-light {%endif%}">
 
                 <div class="form-group col-12 col-md-1 mb-0">
                     <input type="text" class="form-control" readonly value="#{{forloop.counter}}">
@@ -69,6 +69,7 @@
                     {% autoescape on %}
                     <button onclick="alert(`{{form.description.value}}`)" type="button" class="btn btn-primary">О.К</button>
                     {% endautoescape %}
+                    <button onclick="document.getElementById(`task-{{form.task_name.value}}`).remove()" type="button" class="btn btn-danger">-</button>
                 </div>
             </div>
             <hr>

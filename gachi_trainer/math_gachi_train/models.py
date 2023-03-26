@@ -9,6 +9,7 @@ class CollectionModel(models.Model):
     priority = models.IntegerField(default=1)
     enabled = models.BooleanField(default=True)
     description = models.TextField(null=True,default="")
+    limit = models.IntegerField(default=9999)
 
     def __unicode__(self):
         return u'%s' % (self.name)
