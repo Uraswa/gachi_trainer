@@ -11,14 +11,39 @@
 <body>
 
     <div class="container">
-        <div class="d-flex flex-column mt-0 mb-0 justify-content-center align-items-center" style="height: 100vh">
+        <div id="stage-1" class="d-flex flex-column mt-0 mb-0 justify-content-center align-items-center" style="height: 90vh">
             <h3 class="mt-0 mb-0" id="stage1-word">Слово</h3>
             <div class="mt-5 form-inline">
-                 <input class="form-control form-control" type="text" placeholder="Ответ">
-                <button class="btn btn-primary"> Готово</button>
+                 <input class="form-control form-control" type="text" placeholder="Ответ" id="stage1-answer">
+                <button class="btn btn-primary mt-4 mt-sm-0" id="stage1-submit"> Готово</button>
             </div>
 
         </div>
+        <div id="stage-2" class="flex-column mt-0 mb-0 justify-content-center align-items-center" style="height: 90vh">
+            <h3 class="mt-0 mb-0" >Найти лишнее</h3>
+            <div class="mt-5 form-inline">
+
+                <button onclick="stage2Answer(0)" class="btn btn-light  mt-4 mr-5 mt-sm-0" id="stage2-w0"> Слово</button>
+                <button onclick="stage2Answer(1)" class="btn btn-light mt-4mt-sm-0" id="stage2-w1"> Слово</button>
+            </div>
+
+             <div class="mt-5 form-inline">
+
+                <button onclick="stage2Answer(2)" class="btn btn-light  mt-4 mr-5 mt-sm-0" id="stage2-w2"> Слово</button>
+                <button onclick="stage2Answer(3)" class="btn btn-light mt-4 mt-sm-0" id="stage2-w3"> Слово</button>
+            </div>
+
+        </div>
+
+        <div class="d-flex justify-content-center">
+            <div class="">
+                <button class="btn-lg btn-block btn-primary" onclick="SendResult()">Завершить</button>
+            </div>
+        </div>
+
+        <form action="" id="result-form" method="post">
+            <input type="hidden" id="result-input" name="result">
+        </form>
 
 
     </div>
@@ -26,12 +51,46 @@
     <script src="https://code.jquery.com/jquery-3.6.4.slim.min.js" integrity="sha256-a2yjHM4jnF9f54xUQakjZGaqYs/V1CYvWpoqZzC2/Bw=" crossorigin="anonymous"></script>
     <script>
 
-        const parsedJson = JSON.parse(`{{wordsJson|safe}}`);
+        const stage1AnswerInput = $('#stage1-answer');
+        const stage1 = $('#stage-1');
+        const stage2 = $('#stage-2');
+        const resultInput = $('#result-input');
+        const resultForm = $('#result-form');
+        const result = {};
+
+        let parsedJson = JSON.parse(`{{wordsJson|safe}}`);
+        let parsedJson2 = JSON.parse(`{{stage2Json|safe}}`);
+        const mistakes = [];
         let currentWord = {};
         let currentWordIndex = 0;
+        let stage1Repeat = false;
 
         $(document).ready(function(){
-            updateStage1Word(0);
+
+             stage2.addClass('d-none')
+
+             updateStage1Word(0);
+
+        });
+
+
+
+        $('#stage1-submit').on('click', function (e) {
+            let answer = stage1AnswerInput.val();
+            if (answer !== currentWord.rightAnswer) {
+                alert(currentWord['wordRightImposter']);
+                mistakes.push(currentWord);
+                WorkResult(currentWord, 1);
+            }
+            WorkResult(currentWord, 0);
+
+
+            stage1AnswerInput.val('');
+            if (currentWordIndex + 1 == parsedJson.length) {
+                S1toS2();
+                return;
+            }
+            updateStage1Word(currentWordIndex + 1);
         });
 
         function updateStage1Word(index){
@@ -39,6 +98,118 @@
                 currentWord = word;
                 currentWordIndex = index;
                 $('#stage1-word').text(word['renderWord']);
+        }
+
+        // stage 2 code
+
+        let currentStage2Index = 0;
+        let currentStage2Words = [];
+
+        function S1toS2(){
+
+            if (stage1Repeat){
+                alert("Nice!");
+                SendResult();
+                return;
+            }
+            stage1.addClass('d-none');
+            stage1.removeClass('d-flex');
+
+            stage2.addClass('d-flex');
+            stage2.removeClass('d-none');
+
+            nexts2Words(0);
+        }
+
+        function S2toS1(){
+
+            stage2.addClass('d-none');
+            stage2.removeClass('d-flex');
+
+            stage1.addClass('d-flex');
+            stage1.removeClass('d-none');
+
+            stage1Repeat = true;
+            updateStage1Word(0);
+        }
+
+        function nexts2Words(index){
+
+            if (index == parsedJson2.length){
+
+                if (mistakes.length == 0){
+                    alert("NICE");
+                    SendResult();
+                    return;
+                }
+
+                parsedJson = mistakes;
+                S2toS1();
+                return;
+
+            }
+
+            currentStage2Index = index;
+
+            let words = currentStage2Words = parsedJson2[currentStage2Index];
+
+            for(let i = 0; i < 4; i++){
+                $('#stage2-w' + i).text(words[i]['renderWord']);
+            }
+
+            console.log(words);
+        }
+
+        function stage2Answer(index){
+
+
+            if (index == 0 && currentStage2Words[0]['rightAnswer'] != currentStage2Words[1]['rightAnswer'] && currentStage2Words[0]['rightAnswer'] != currentStage2Words[2]['rightAnswer']){
+                WorkResult(currentStage2Words[0], 0);
+                WorkResult(currentStage2Words[1], 0);
+                WorkResult(currentStage2Words[2], 0);
+                WorkResult(currentStage2Words[3], 0);
+            } else if (index == 1 && currentStage2Words[1]['rightAnswer'] != currentStage2Words[2]['rightAnswer'] && currentStage2Words[1]['rightAnswer'] != currentStage2Words[3]['rightAnswer']){
+                WorkResult(currentStage2Words[0], 0);
+                WorkResult(currentStage2Words[1], 0);
+                WorkResult(currentStage2Words[2], 0);
+                WorkResult(currentStage2Words[3], 0);
+            } else if (index == 2 && currentStage2Words[2]['rightAnswer'] != currentStage2Words[3]['rightAnswer'] && currentStage2Words[2]['rightAnswer'] != currentStage2Words[1]['rightAnswer']){
+                WorkResult(currentStage2Words[0], 0);
+                WorkResult(currentStage2Words[1], 0);
+                WorkResult(currentStage2Words[2], 0);
+                WorkResult(currentStage2Words[3], 0);
+           } else if (index == 3 && currentStage2Words[3]['rightAnswer'] != currentStage2Words[2]['rightAnswer'] && currentStage2Words[3]['rightAnswer'] != currentStage2Words[1]['rightAnswer']){
+                WorkResult(currentStage2Words[0], 0);
+                WorkResult(currentStage2Words[1], 0);
+                WorkResult(currentStage2Words[2], 0);
+                WorkResult(currentStage2Words[3], 0);
+           } else {
+                alert("Неверно! " + currentStage2Words[index]['wordRightImposter']);
+                mistakes.push(currentStage2Words[0]);
+                mistakes.push(currentStage2Words[1]);
+                mistakes.push(currentStage2Words[2]);
+                mistakes.push(currentStage2Words[3]);
+
+                WorkResult(currentStage2Words[0], 1);
+                WorkResult(currentStage2Words[1], 1);
+                WorkResult(currentStage2Words[2], 1);
+                WorkResult(currentStage2Words[3], 1);
+           }
+
+           nexts2Words(currentStage2Index + 1)
+        }
+
+        function WorkResult(w, mistakes){
+            if (!(w['wordId'] in result)){
+                result[w['wordId']] = 0;
+            }
+
+            result[w['wordId']] = result[w['wordId']] + mistakes;
+        }
+
+        function SendResult(){
+            resultInput.val(JSON.stringify(result));
+            resultForm.submit();
         }
     </script>
 
