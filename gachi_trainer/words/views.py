@@ -60,13 +60,14 @@ def words(request):
         storage.initialData = ""
         storage.save()
 
+    print(wordsToAdd)
     for w2a in wordsToAdd:
 
         word = Word()
 
         word.word = w2a[0]
         word.storage = w2a[1]
-        word.repeatDate = datetime.now()
+        word.repeatDate = datetime.date.today()
 
         word.save()
 
@@ -86,6 +87,7 @@ def words(request):
             .replace("Ю", "?") \
             .replace("У", "?") \
             .replace("Е", "?") \
+            .replace("Ё", "?") \
             .replace("И", "?") \
             .replace("О", "?") \
             .replace("Н", "?") \
@@ -114,6 +116,8 @@ def words(request):
                 wordImposter += "А"
             elif c == "Е":
                 wordImposter += "И"
+            elif c == "Ё":
+                wordImposter += "О"
             elif c == "И":
                 wordImposter += "Е"
             elif c == "У":
