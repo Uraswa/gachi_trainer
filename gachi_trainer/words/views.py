@@ -55,6 +55,13 @@ def words(request):
 
             ls = l.split(",")
             for w in ls:
+
+                if storage.storageName == "пре,при":
+                    if "пре" in w:
+                        w = w.replace("пре", "прЕ", 1)
+                    elif "при" in w:
+                        w = w.replace("при", "прИ", 1)
+
                 wordsToAdd.append((w, storage))
 
         storage.initialData = ""
@@ -75,7 +82,9 @@ def words(request):
 
 
     wordsResult = []
-    words = list(Word.objects.filter(repeatDate__lte=datetime.date.today()).order_by('-repeatIndex'))[:25]
+    words = list(Word.objects.filter(repeatDate__lte=datetime.date.today()).order_by('-repeatIndex'))
+
+    words = words[:25]
 
     for word in words:
 
