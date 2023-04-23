@@ -84,6 +84,16 @@ def words(request):
     wordsResult = []
     words = list(Word.objects.filter(repeatDate__lte=datetime.date.today()).order_by('-repeatIndex'))
 
+
+    words2 = []
+
+    for word in words:
+        if word.word.replace(" ", "").replace("\n", "").replace("\r", "") == "": continue
+        words2.append(word)
+
+    words = words2
+
+    random.shuffle(words)
     words = words[:25]
 
     for word in words:
@@ -99,42 +109,10 @@ def words(request):
             .replace("Ё", "?") \
             .replace("И", "?") \
             .replace("О", "?") \
+            .replace("НН", "?") \
             .replace("Н", "?") \
 
         right_answer = FormRightAnswer(word.word)
-
-
-
-        wordImposter = ""
-
-        for i in range(len(word.word)):
-            c = word.word[i]
-            if c == "0":
-                wordImposter += " "
-            elif c == "1":
-                wordImposter += ""
-            elif c == "Н" and i + 1 != len(word.word) and  word.word[i + 1] == "Н":
-                wordImposter += ""
-            elif c == "Н" and i - 1 >= 0 and word.word[i - 1] == "Н":
-                wordImposter += "Н"
-            elif c == "Н":
-                wordImposter += "НН"
-            elif c == "А":
-                wordImposter += "О"
-            elif c == "О":
-                wordImposter += "А"
-            elif c == "Е":
-                wordImposter += "И"
-            elif c == "Ё":
-                wordImposter += "О"
-            elif c == "И":
-                wordImposter += "Е"
-            elif c == "У":
-                wordImposter += "Ю"
-            elif c == "Ю":
-                wordImposter += "У"
-            else:
-                wordImposter += c
 
 
         wordRightImposter = word.word.replace("0", "").replace("1", " ")
@@ -144,11 +122,8 @@ def words(request):
             "renderWord": renderWord.replace("\r", "").replace("\n", "").replace(";", ""),
             "rightAnswer": right_answer.lower().replace("\r", "").replace("\n", "").replace(";", ""),
             "wordId": word.id,
-            "wordImposter": wordImposter.replace("\r", "").replace("\n", "").replace(";", ""),
             "wordRightImposter": wordRightImposter.replace("\r", "").replace("\n", "").replace(";", "")
         })
-
-    random.shuffle(wordsResult)
 
 
     # form pairs
