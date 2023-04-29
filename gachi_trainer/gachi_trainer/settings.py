@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'words',
+    'pronounce',
     'math_gachi_train',
     'django.contrib.admin',
     'django.contrib.auth',

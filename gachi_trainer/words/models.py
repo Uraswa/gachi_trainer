@@ -6,6 +6,9 @@ class WordStorage(models.Model):
 
     initialData = models.TextField(max_length=99999999, null=True)
 
+    def __str__(self):
+        return f"{self.storageName}"
+
 
 class Word(models.Model):
     storage = models.ForeignKey(to=WordStorage, on_delete=models.CASCADE, related_name="words")
@@ -15,3 +18,6 @@ class Word(models.Model):
     totalRepeatedTimes = models.IntegerField(default=0)
     repeatIndex = models.IntegerField(default=0)
     repeatDate = models.DateField(null=True)
+
+    def __str__(self):
+        return f"{self.word}"

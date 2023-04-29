@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+
+        <div id="stage-1" class="d-flex flex-row mt-0 mb-0 justify-content-center align-items-center" style="height: 90vh">
+
+        </div>
+
+    <form action="" method="post" id="result-form">
+        <input type="hidden" name="result" id="result-input">
+    </form>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.4.slim.min.js" integrity="sha256-a2yjHM4jnF9f54xUQakjZGaqYs/V1CYvWpoqZzC2/Bw=" crossorigin="anonymous"></script>
+<script>
+
+    const words = JSON.parse(`{{words|safe}}`);
+    const stage1 = $('#stage-1');
+    const resultInput = $('#result-input');
+    const resultForm = $('#result-form');
+    let currentIndex = -1;
+
+    $(document).ready(function () {
+        nextWord();
+    });
+
+    function nextWord(){
+        if (words.length == 0) return;
+        currentIndex +=1;
+
+        if (currentIndex == words.length) {
+            resultInput.val(JSON.stringify(words));
+            resultForm.submit();
+            return;
+        }
+        let word = words[currentIndex];
+
+        let h = '';
+        for(let letter of word.letters){
+            h += `<button class='${letter.class}' ${letter.right ? 'onclick=\"rightAnswer(); \"' : 'onclick=\"wrongAnswer(); \"'}>${letter.letter}</button>`;
+        }
+
+        stage1.html(h);
+    }
+
+    function rightAnswer(){
+        nextWord();
+    }
+
+    function wrongAnswer(){
+        let word = words[currentIndex];
+        words.push(word);
+        word.errors +=1;
+        nextWord();
+    }
+</script>
+</body>
+</html>

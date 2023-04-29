@@ -18,6 +18,7 @@ from django.urls import include, path
 
 urlpatterns = [
     path('words/', include("words.urls")),
+    path('pronounce/', include("pronounce.urls")),
     path('', include('math_gachi_train.urls')),
     path('admin/', admin.site.urls),
 ]
