@@ -11,7 +11,7 @@
 <body>
 <div class="container">
 
-        <div id="stage-1" class="d-flex flex-row mt-0 mb-0 justify-content-center align-items-center" style="height: 90vh">
+        <div id="stage-1" class="d-flex flex-column mt-0 mb-0 justify-content-center align-items-center" style="height: 90vh">
 
         </div>
 
@@ -43,10 +43,12 @@
         }
         let word = words[currentIndex];
 
-        let h = '';
+        let h = `<h5 class="mb-4" >${word.hint}</h5><div class="d-flex">`;
         for(let letter of word.letters){
             h += `<button class='${letter.class}' ${letter.right ? 'onclick=\"rightAnswer(); \"' : 'onclick=\"wrongAnswer(); \"'}>${letter.letter}</button>`;
         }
+
+        h += `</div>`;
 
         stage1.html(h);
     }
@@ -56,7 +58,9 @@
     }
 
     function wrongAnswer(){
+
         let word = words[currentIndex];
+        alert('Правильно будет ' + words[currentIndex]['right']);
         words.push(word);
         word.errors +=1;
         nextWord();

@@ -3,3 +3,4 @@ from pronounce.models import *
 
 # Register your models here.
 admin.site.register(Pronounce)
+admin.site.register(Hint)

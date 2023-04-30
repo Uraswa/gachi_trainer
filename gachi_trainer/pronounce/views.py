@@ -38,16 +38,22 @@ def index(request):
         resultItem['id'] = pronounce.id
         resultItem["letters"] = []
         resultItem["errors"] = 0
+        resultItem["right"] = pronounce.word
+        resultItem["hint"] = ""
+
+        if pronounce.hint != None:
+            resultItem["hint"] = pronounce.hint.name
+
         for s in pronounce.word:
             if s in "АЯУЮЫИОЁЕЭ":
                 resultItem["letters"].append({
-                    "class": "btn btn-primary right-letter ml-1 mr-1",
+                    "class": "btn right-letter ml-1 mr-1",
                     "letter": s.lower(),
                     "right": True
                 })
             elif s in "аяуюыиёоеэ":
                 resultItem["letters"].append({
-                    "class": "btn btn-primary dangeon-letter ml-1 mr-1",
+                    "class": "btn dangeon-letter ml-1 mr-1",
                     "letter": s,
                     "right": False
                 })
