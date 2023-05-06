@@ -1,5 +1,6 @@
 import datetime
 import random
+import json
 
 from django.forms import formset_factory
 from django.shortcuts import render
@@ -184,7 +185,24 @@ def index(request):
          'descriptionT': obj.description,
          } for obj in result_tasks]
     formset = MyModelFormSet(initial=initial_data)
-    return render(request, 'index.html', {'tasks': result_tasks, 'formset': formset, 'areNew': are_new})
+
+    # calendar
+    calendar_tasks = []
+    index = 0
+    for task in TaskModel.objects.all():
+        if task.banned: continue
+        calendar_tasks.append({
+            'id': index,
+            'calendarId': index,
+            'title': task.task_name,
+            'category': 'allday',
+            'dueDateClass': '',
+            'start': str(task.task_repeat_date),
+            'end': str(task.task_repeat_date),
+        })
+        index +=1
+
+    return render(request, 'index.html', {'tasks': result_tasks, 'formset': formset, 'areNew': are_new, 'calendar': json.dumps(calendar_tasks, ensure_ascii=False)})
 
 
 def formListOfTasks(maximumCost: int, tasks_list: list):
