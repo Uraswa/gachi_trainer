@@ -14,7 +14,7 @@ def getDays(index):
     if index == 0: return 1
     if index == 1: return 2
     if index == 2: return 4
-    return 7
+    return 4
 
 @csrf_exempt
 def words(request):
@@ -40,6 +40,7 @@ def words(request):
                 word.repeatDate = datetime.date.today() + datetime.timedelta(days=getDays(word.repeatIndex))
 
             word.save()
+
 
 
 

@@ -47,6 +47,7 @@ def index(request):
 
             task.save()
 
+
     maximumCost = random.randint(13,18)
     repeat_tasks = []
     are_new = []
@@ -56,6 +57,7 @@ def index(request):
     for collection in CollectionModel.objects.all():
 
         if not collection.enabled: continue
+        if "sub" in request.GET and collection.subject.id != int(request.GET['sub']): continue
         if str(datetime.datetime.now().weekday()) not in collection.subject.weekDays: continue
         # tasks = TaskModel.objects.get(collection=collection)
 
