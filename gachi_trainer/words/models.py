@@ -4,7 +4,9 @@ from django.db import models
 class WordStorage(models.Model):
     storageName = models.CharField(max_length=256)
 
-    initialData = models.TextField(max_length=99999999, null=True)
+    initialData = models.TextField(max_length=99999999, null=True, default="", blank=True)
+    ignore2ndStage = models.BooleanField(default=False)
+    enabled = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.storageName}"

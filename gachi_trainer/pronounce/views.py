@@ -68,4 +68,4 @@ def index(request):
 
 
 
-    return render(request, "pronounce.html", {"words": json.dumps(resultList, ensure_ascii=False)})
+    return render(request, "pronounce.html", {"words": json.dumps(resultList[:20], ensure_ascii=False)})

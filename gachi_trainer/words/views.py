@@ -2,8 +2,10 @@ import datetime
 import json
 import random
 import itertools
+import re
 
 from django.shortcuts import render
+from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
@@ -40,6 +42,7 @@ def words(request):
                 word.repeatDate = datetime.date.today() + datetime.timedelta(days=getDays(word.repeatIndex))
 
             word.save()
+        return redirect("words")
 
 
 
@@ -68,6 +71,7 @@ def words(request):
         storage.initialData = ""
         storage.save()
 
+
     print(wordsToAdd)
     for w2a in wordsToAdd:
 
@@ -90,6 +94,7 @@ def words(request):
 
     for word in words:
         if word.word.replace(" ", "").replace("\n", "").replace("\r", "") == "": continue
+        if not word.storage.enabled: continue
         words2.append(word)
 
     words = words2
@@ -99,19 +104,10 @@ def words(request):
 
     for word in words:
 
-        renderWord = word.word \
-            .replace("1", "?") \
-            .replace("0", "?") \
-            .replace("А", "?") \
-            .replace("Я", "?") \
-            .replace("Ю", "?") \
-            .replace("У", "?") \
-            .replace("Е", "?") \
-            .replace("Ё", "?") \
-            .replace("И", "?") \
-            .replace("О", "?") \
-            .replace("НН", "?") \
-            .replace("Н", "?") \
+        renderWord = word.word.replace("1", "?").replace("0", "?")
+
+        renderWord = re.sub(r"[АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЫЭЮЯЪЬ]{2,}", "?", renderWord)
+        renderWord = re.sub(r"[АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЫЭЮЯЪЬ]+", "?", renderWord)
 
         right_answer = FormRightAnswer(word.word)
 
@@ -128,7 +124,13 @@ def words(request):
 
 
     # form pairs
-    copied = wordsResult.copy()
+    copied = []
+
+    for word in wordsResult:
+        realWord = Word.objects.get(id=word['wordId'])
+        if realWord.storage.ignore2ndStage: continue
+
+        copied.append(word)
 
     stage2tasks = []
     cache = {}
@@ -283,23 +285,7 @@ def FormRightAnswer(word: str):
             right_answer += ""
         elif c == "1":
             right_answer += " "
-        elif c == "Н":
-            right_answer += c
-        elif c == "А":
-            right_answer += c
-        elif c == "Я":
-            right_answer += c
-        elif c == "О":
-            right_answer += c
-        elif c == "Е":
-            right_answer += c
-        elif c == "Ё":
-            right_answer += c
-        elif c == "И":
-            right_answer += c
-        elif c == "У":
-            right_answer += c
-        elif c == "Ю":
+        elif c in "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЫЭЮЯЪЬ":
             right_answer += c
 
     return right_answer
