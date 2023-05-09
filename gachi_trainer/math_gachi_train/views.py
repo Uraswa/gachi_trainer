@@ -1,7 +1,7 @@
 import datetime
 import random
 import json
-
+from django.shortcuts import redirect
 from django.forms import formset_factory
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -47,6 +47,7 @@ def index(request):
             task.task_repeat_date = date.today() + datetime.timedelta(days=f.cleaned_data['days'])
 
             task.save()
+        return redirect("index")
 
 
     maximumCost = random.randint(13,18)
